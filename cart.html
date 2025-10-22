@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container container">
+                <div class="nav-left">
+                    <div class="logo">
+                        <a href="index.html" aria-label="Skm Cart home">
+                            <img src="favicon.png" alt="Skm Cart logo">
+                            <span class="sr-only">Cart</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-center">
+                    <div class="search-bar">
+                        <select id="search-category" class="search-category" aria-label="Select category">
+                            <option value="all">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="appliances">Home Appliances</option>
+                        </select>
+                        <input id="search-input" class="search-input" type="search" placeholder="Search for products, brands, and more" aria-label="Search products">
+                        <button class="search-btn" aria-label="Submit search"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+
+                <div class="nav-right">
+                    <div class="nav-icons-stack">
+                        <a href="#" class="icon-item" aria-label="Wishlist">
+                            <i class="far fa-heart fa-lg" aria-hidden="true"></i>
+                            <span class="nav-label">Wishlist</span>
+                        </a>
+                        <a href="#" class="icon-item" aria-label="Account">
+                            <i class="far fa-user fa-lg" aria-hidden="true"></i>
+                            <span class="nav-label">Account</span>
+                        </a>
+                        <a href="cart.html" class="icon-item cart-icon-link" aria-label="View cart">
+                            <i class="fas fa-shopping-cart fa-lg" aria-hidden="true"></i>
+                            <span class="nav-label">Cart</span>
+                            <span class="cart-count" aria-live="polite">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-container container">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h2>Your Shopping Cart</h2>
+            <button id="back-button" class="cta-button" type="button" aria-label="Go back">Back</button>
+        </div>
+        <div id="cart-grid">
+            <div class="cart-items" id="cart-items">
+                </div>
+            <div class="order-summary">
+                <h3>Cart Summary</h3>
+                <p id="cart-total">Total: $0.00</p>
+                <a href="cheakout.html" id="checkout-link" class="cta-button">Proceed to Checkout</a>
+            </div>
+        </div>
+        <div class="empty-cart" id="empty-cart-message" style="display: none;">
+            <h3>Your cart is empty.</h3>
+            <a href="index.html#products" class="cta-button">Continue Shopping</a>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

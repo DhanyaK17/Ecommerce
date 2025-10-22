@@ -1,0 +1,44 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login form</title>
+    <link rel="shortcut icon" href="login img.png" type="image/x-icon">
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <center>
+        <fieldset class="login">
+            <legend>Login Form</legend>
+            <form class="form" action="index.html" id="loginForm">
+                <input type="email" id="email" placeholder="Enter your email" required><br>
+                <input type="password" id="password" placeholder="Enter your password" required><br>
+                <input type="submit" value="Login">
+            </form>
+    </center>
+    </fieldset>
+
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const enteredUsermail = document.getElementById('email').value;
+            const registeredUsermail = localStorage.getItem('registeredUser');
+            const enteredPassword = document.getElementById('password').value;
+            const registeredPassword = localStorage.getItem('userPassword');
+    console.log(enteredUsermail , registeredUsermail , enteredPassword , registeredPassword);
+
+            if (enteredUsermail === registeredUsermail && enteredPassword === registeredPassword) {
+                alert("Login successful!");
+                window.location.href = 'index.html';
+            } else {
+                alert('error please check you mail / password');
+            }
+        });
+    </script>
+</body>
+
+</html>

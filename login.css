@@ -1,0 +1,23 @@
+*{
+    margin: 10px;
+    padding: 10px;
+}
+body{
+    background-color:black;
+}
+.login{
+    margin-top: 150px;
+    color: hotpink;
+    border: 5px solid white;
+    border-radius: 10px;
+    width: 40px;
+    height: 300px;
+    font-size: 30px;
+}
+.form{
+    background: hotpink;
+    border-radius: 5px;
+}
+input{
+    border-radius: 5px;
+}
