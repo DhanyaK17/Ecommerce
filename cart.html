@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Shopzy</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 40px auto;
+        }
+        .cart-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px 120px 50px;
+            gap: 20px;
+            align-items: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
+        .cart-summary {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            margin-top: 30px;
+            text-align: right;
+        }
+        .total-price { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container cart-container">
+        <a href="index.html" class="footer-link" style="display: inline-block; margin-bottom: 20px;">← Back to Shopping</a>
+        <div class="card">
+            <h1>Shopping Cart</h1>
+            <p class="subtitle">Review your items before checkout.</p>
+            
+            <div id="cart-items-list">
+                <!-- Cart items populated here -->
+            </div>
+
+            <div id="empty-cart-msg" style="display: none; text-align: center; padding: 40px;">
+                <p style="font-size: 1.2rem; color: var(--text-muted);">Your cart is empty.</p>
+                <a href="index.html" class="footer-link">Go shopping!</a>
+            </div>
+
+            <div id="cart-footer" class="cart-summary" style="display: none;">
+                <p style="color: var(--text-muted);">Grand Total</p>
+                <h2 id="grand-total" class="total-price">$0.00</h2>
+                <button onclick="navigateTo('checkout.html')" style="max-width: 300px; margin-left: auto;">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', renderCart);
+
+        function renderCart() {
+            const cart = getCart();
+            const container = document.getElementById('cart-items-list');
+            const footer = document.getElementById('cart-footer');
+            const emptyMsg = document.getElementById('empty-cart-msg');
+
+            if (cart.length === 0) {
+                container.innerHTML = '';
+                footer.style.display = 'none';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            footer.style.display = 'block';
+            
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/400x400/1e1b4b/f8fafc?text=Product'">
+                        <div>
+                            <h4 style="margin-bottom: 5px;">${item.name}</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">${item.category}</p>
+                        </div>
+                        <div style="font-weight: 600;">$${parseFloat(item.price).toFixed(2)}</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="number" value="${item.quantity}" min="1" 
+                                onchange="updateQty(${item.id}, this.value)" 
+                                style="width: 50px; padding: 5px; border-radius: 8px;">
+                        </div>
+                        <button onclick="removeAndRefresh(${item.id})" 
+                            style="background: transparent; color: #ef4444; border: none; width: auto; padding: 0;">✕</button>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function updateQty(id, newQty) {
+            let cart = getCart();
+            const item = cart.find(i => i.id == id);
+            if (item) {
+                item.quantity = parseInt(newQty);
+                saveCart(cart);
+                renderCart();
+            }
+        }
+
+        function removeAndRefresh(id) {
+            removeFromCart(id);
+            renderCart();
+        }
+    </script>
+</body>
+</html>

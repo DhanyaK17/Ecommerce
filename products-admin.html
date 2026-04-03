@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products | Shopzy Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-card {
+            max-width: 1000px;
+            width: 100%;
+            margin: 40px auto;
+        }
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        select, textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .product-img-preview {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-card">
+        <a href="index.html" class="back-link">← Back to Storefront</a>
+        <div class="card">
+            <h1>Manage Products</h1>
+            <p class="subtitle">Add and track your inventory.</p>
+            
+            <form id="product-form">
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label for="p-category">Category</label>
+                        <select id="p-category" required>
+                            <option value="" disabled selected>Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-subcategory">Sub-Category</label>
+                        <select id="p-subcategory" required>
+                            <option value="" disabled selected>Select Sub-Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-name">Product Name</label>
+                        <input type="text" id="p-name" placeholder="e.g. iPhone 15" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p-desc">Description</label>
+                    <textarea id="p-desc" rows="3" placeholder="Enter product details..." required></textarea>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label for="p-price">Price ($)</label>
+                        <input type="number" id="p-price" step="0.01" placeholder="99.99" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-stock">Available Stock</label>
+                        <input type="number" id="p-stock" placeholder="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-image">Image URL</label>
+                        <input type="url" id="p-image" placeholder="https://..." required>
+                    </div>
+                </div>
+                
+                <button type="submit">Add Product</button>
+            </form>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Img</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list">
+                        <!-- Products will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        if (!checkAdmin()) {}
+
+        const pForm = document.getElementById('product-form');
+        const pList = document.getElementById('product-list');
+        const catSelect = document.getElementById('p-category');
+        const subcatSelect = document.getElementById('p-subcategory');
+
+        // Populate Categories
+        function loadCats() {
+            const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            catSelect.innerHTML = '<option value="" disabled selected>Select Category</option>' + 
+                categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        }
+
+        // Update Subcats based on selection
+        catSelect.addEventListener('change', (e) => {
+            const selectedCat = e.target.value;
+            const subcategories = JSON.parse(localStorage.getItem('subcategories') || '[]');
+            const filtered = subcategories.filter(s => s.category === selectedCat);
+            
+            subcatSelect.innerHTML = '<option value="" disabled selected>Select Sub-Category</option>' + 
+                filtered.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+        });
+
+        function renderProducts() {
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            pList.innerHTML = products.map((p, index) => `
+                <tr>
+                    <td><img src="${p.image}" class="product-img-preview" alt="${p.name}"></td>
+                    <td>${p.name}</td>
+                    <td><small>${p.category} > ${p.subcategory}</small></td>
+                    <td>$${parseFloat(p.price).toFixed(2)}</td>
+                    <td>${p.stock}</td>
+                    <td>
+                        <button onclick="deleteProduct(${index})" style="padding: 4px 8px; font-size: 0.75rem; background: #ef4444; width: auto;">Delete</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No products found.</td></tr>';
+        }
+
+        pForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const product = {
+                id: Date.now(),
+                category: catSelect.value,
+                subcategory: subcatSelect.value,
+                name: document.getElementById('p-name').value,
+                desc: document.getElementById('p-desc').value,
+                price: document.getElementById('p-price').value,
+                stock: document.getElementById('p-stock').value,
+                image: document.getElementById('p-image').value
+            };
+
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+            
+            pForm.reset();
+            renderProducts();
+        });
+
+        function deleteProduct(index) {
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            products.splice(index, 1);
+            localStorage.setItem('products', JSON.stringify(products));
+            renderProducts();
+        }
+
+        loadCats();
+        renderProducts();
+    </script>
+</body>
+</html>

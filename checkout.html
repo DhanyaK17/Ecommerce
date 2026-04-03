@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Shopzy</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 40px;
+            max-width: 1100px;
+            width: 100%;
+            margin: 40px auto;
+        }
+        .summary-card {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        input, select { margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container checkout-grid">
+        <div class="card">
+            <h1>Checkout</h1>
+            <p class="subtitle">Enter your shipping and payment information.</p>
+            
+            <form id="checkout-form">
+                <h3 style="margin-bottom: 15px; color: var(--primary);">1. Shipping Details</h3>
+                <div class="form-group">
+                    <label for="ship-name">Full Name</label>
+                    <input type="text" id="ship-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="ship-address">Shipping Address</label>
+                    <textarea id="ship-address" rows="3" required></textarea>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--primary);">2. Payment Method</h3>
+                <div class="form-group">
+                    <label for="pay-method">Payment Options</label>
+                    <select id="pay-method" required>
+                        <option value="Credit Card">Credit/Debit Card</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Google Pay">Google Pay</option>
+                    </select>
+                </div>
+                <div id="card-details">
+                    <div class="form-group">
+                        <label for="card-num">Card Number</label>
+                        <input type="text" id="card-num" placeholder="XXXX XXXX XXXX XXXX" pattern="\d{16}" title="16-digit card number">
+                    </div>
+                </div>
+
+                <button type="submit" style="margin-top: 20px;">Place Secure Order</button>
+            </form>
+        </div>
+
+        <aside class="summary-card">
+            <h3 style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Order Summary</h3>
+            <div id="summary-items">
+                <!-- Summary items populated here -->
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+            <div class="summary-item" style="font-weight: 800; font-size: 1.25rem;">
+                <span>Total:</span>
+                <span id="summary-total">$0.00</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                🔒 SSL Secure Checkout
+            </p>
+        </aside>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (currentUser) {
+                document.getElementById('ship-name').value = currentUser.name || '';
+                document.getElementById('ship-address').value = currentUser.address || '';
+            }
+
+            const cart = getCart();
+            if (cart.length === 0) {
+                alert('Your cart is empty! Redirecting to shop...');
+                navigateTo('index.html');
+                return;
+            }
+
+            renderSummary();
+
+            // Toggle Card Details
+            const payMethodSelect = document.getElementById('pay-method');
+            const cardDetailsDiv = document.getElementById('card-details');
+            
+            payMethodSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'Credit Card') {
+                    cardDetailsDiv.style.display = 'block';
+                    document.getElementById('card-num').setAttribute('required', 'required');
+                } else {
+                    cardDetailsDiv.style.display = 'none';
+                    document.getElementById('card-num').removeAttribute('required');
+                }
+            });
+        });
+
+        function renderSummary() {
+            const cart = getCart();
+            const container = document.getElementById('summary-items');
+            let total = 0;
+
+            container.innerHTML = cart.map(item => {
+                total += (item.price * item.quantity);
+                return `
+                    <div class="summary-item">
+                        <span style="color: var(--text-muted);">${item.quantity} x ${item.name}</span>
+                        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('summary-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const customer = {
+                name: document.getElementById('ship-name').value,
+                address: document.getElementById('ship-address').value
+            };
+            const payment = {
+                method: document.getElementById('pay-method').value
+            };
+
+            const result = placeOrder(customer, payment);
+            
+            if (result.success) {
+                alert('Success! Your order ' + result.orderId + ' has been placed.');
+                navigateTo('orders.html');
+            } else {
+                alert(result.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Sub-Categories | Shopzy Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-card {
+            max-width: 800px;
+            width: 100%;
+            margin: 40px auto;
+        }
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        select option {
+            background: #0f172a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-card">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+        <div class="card">
+            <h1>Manage Sub-Categories</h1>
+            <p class="subtitle">Assign sub-categories to your main categories.</p>
+            
+            <form id="subcat-form">
+                <div class="form-group">
+                    <label for="cat-select">Parent Category</label>
+                    <select id="cat-select" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="subcat-name">Sub-Category Name</label>
+                        <input type="text" id="subcat-name" placeholder="e.g. Smart Watch" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcat-short">Short Name</label>
+                        <input type="text" id="subcat-short" placeholder="e.g. SWATCH" required>
+                    </div>
+                </div>
+                <button type="submit">Add Sub-Category</button>
+            </form>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Sub-Category</th>
+                            <th>Short Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subcat-list">
+                        <!-- Subcategories will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        // Check permission immediately
+        if (!checkAdmin()) {
+            // Already handled by checkAdmin logic
+        }
+
+        const subcatForm = document.getElementById('subcat-form');
+        const catSelect = document.getElementById('cat-select');
+        const subcatList = document.getElementById('subcat-list');
+
+        function loadCategories() {
+            const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            catSelect.innerHTML = '<option value="" disabled selected>Select Category</option>' + categories.map(cat => `
+                <option value="${cat.name}">${cat.name}</option>
+            `).join('');
+        }
+
+        function renderSubCategories() {
+            const subcategories = JSON.parse(localStorage.getItem('subcategories') || '[]');
+            subcatList.innerHTML = subcategories.map((sub, index) => `
+                <tr>
+                    <td>${sub.category}</td>
+                    <td>${sub.name}</td>
+                    <td>${sub.short}</td>
+                    <td>
+                        <button onclick="deleteSubCategory(${index})" style="padding: 4px 8px; font-size: 0.75rem; background: #ef4444; width: auto;">Delete</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No sub-categories found.</td></tr>';
+        }
+
+        subcatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const category = catSelect.value;
+            const name = document.getElementById('subcat-name').value;
+            const short = document.getElementById('subcat-short').value;
+
+            const subcategories = JSON.parse(localStorage.getItem('subcategories') || '[]');
+            subcategories.push({ category, name, short });
+            localStorage.setItem('subcategories', JSON.stringify(subcategories));
+            
+            subcatForm.reset();
+            renderSubCategories();
+        });
+
+        function deleteSubCategory(index) {
+            const subcategories = JSON.parse(localStorage.getItem('subcategories') || '[]');
+            subcategories.splice(index, 1);
+            localStorage.setItem('subcategories', JSON.stringify(subcategories));
+            renderSubCategories();
+        }
+
+        // Initial render
+        loadCategories();
+        renderSubCategories();
+    </script>
+</body>
+</html>

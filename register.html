@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started | Shopzy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="lite-wrapper">
+    <div class="lite-card" style="max-width: 440px; padding: 30px;">
+        <h1 class="lite-logo" style="margin-bottom: 16px; font-size: 1.5rem;">Shopzy</h1>
+        <h2 style="margin-bottom: 20px; font-size: 1.1rem; text-align: center;">Join our Universe</h2>
+        
+        <form id="register-form">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="fancy-input-container">
+                    <input type="text" id="reg-name" placeholder=" " required>
+                    <label>User Name</label>
+                </div>
+                <div class="fancy-input-container">
+                    <input type="tel" id="reg-phone" placeholder=" " required>
+                    <label>Phone</label>
+                </div>
+            </div>
+            
+            <div class="fancy-input-container">
+                <input type="email" id="reg-email" placeholder=" " required>
+                <label>Email Address</label>
+            </div>
+            
+            <div class="fancy-input-container">
+                <input type="text" id="reg-address" placeholder=" " required>
+                <label>Billing Address</label>
+            </div>
+            
+            <div class="fancy-input-container">
+                <input type="password" id="reg-password" placeholder=" " required>
+                <label>Secure Password</label>
+            </div>
+            
+            <button type="submit" class="fancy-btn" style="width: 100%; padding: 12px;">Create Account</button>
+        </form>
+        
+        <div class="footer-link" style="margin-top: 16px; text-align: center; font-size: 0.85rem;">
+            Already a member? <a href="login.html">Sign In</a>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+</body>
+</html>

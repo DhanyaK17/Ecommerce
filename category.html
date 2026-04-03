@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories | Shopzy Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-card {
+            max-width: 800px;
+            width: 100%;
+            margin: 40px auto;
+        }
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-card">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+        <div class="card">
+            <h1>Manage Categories</h1>
+            <p class="subtitle">Add and view product categories.</p>
+            
+            <form id="category-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="cat-name">Category Name</label>
+                        <input type="text" id="cat-name" placeholder="e.g. Electronics" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-short">Short Name</label>
+                        <input type="text" id="cat-short" placeholder="e.g. ELEC" required>
+                    </div>
+                </div>
+                <button type="submit">Add Category</button>
+            </form>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th>Short Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-list">
+                        <!-- Categories will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        // Check permission immediately
+        if (!checkAdmin()) {
+            // Already handled by checkAdmin logic
+        }
+
+        const catForm = document.getElementById('category-form');
+        const catList = document.getElementById('category-list');
+
+        function renderCategories() {
+            const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            catList.innerHTML = categories.map((cat, index) => `
+                <tr>
+                    <td>${cat.name}</td>
+                    <td>${cat.short}</td>
+                    <td>
+                        <button onclick="deleteCategory(${index})" style="padding: 4px 8px; font-size: 0.75rem; background: #ef4444; width: auto;">Delete</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No categories found.</td></tr>';
+        }
+
+        catForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('cat-name').value;
+            const short = document.getElementById('cat-short').value;
+
+            const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            categories.push({ name, short });
+            localStorage.setItem('categories', JSON.stringify(categories));
+            
+            catForm.reset();
+            renderCategories();
+        });
+
+        function deleteCategory(index) {
+            const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            categories.splice(index, 1);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderCategories();
+        }
+
+        // Initial render
+        renderCategories();
+    </script>
+</body>
+</html>

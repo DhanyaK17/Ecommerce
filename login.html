@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Shopzy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="lite-wrapper">
+    <div class="lite-card">
+        <h1 class="lite-logo">Shopzy</h1>
+        <h2 style="margin-bottom: 20px; font-size: 1.25rem; text-align: center;">Welcome Back</h2>
+        
+        <form id="login-form">
+            <div class="fancy-input-container">
+                <input type="email" id="login-email" placeholder=" " required>
+                <label>Email Address</label>
+            </div>
+            
+            <div class="fancy-input-container">
+                <input type="password" id="login-password" placeholder=" " required>
+                <label>Account Password</label>
+            </div>
+            
+            <button type="submit" class="fancy-btn" style="width: 100%;">Sign In</button>
+        </form>
+        
+        <div class="footer-link" style="margin-top: 24px; text-align: center;">
+            New here? <a href="register.html">Create account</a>
+        </div>
+        
+        <!-- <div style="margin-top: 30px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+            <code style="font-size: 0.75rem; color: var(--text-muted);">admin@ecommerce.com / admin123</code>
+        </div> -->
+    </div>
+    
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+</body>
+</html>
